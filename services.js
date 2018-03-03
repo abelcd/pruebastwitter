@@ -14,14 +14,12 @@ angular.module('twitterApp.services', []).factory('twitterService', function($q)
         },
         connectTwitter: function() {
             var deferred = $q.defer();
-            console.log("connectTwitter");
             OAuth.popup('twitter', {cache:true}, function(error, result) { //cache means to execute the callback if the tokens are already present
                 if (!error) {
                     authorizationResult = result;
                     deferred.resolve();
                 } else {
                     //do something if there's an error
-
                 }
             });
             return deferred.promise;
@@ -30,23 +28,16 @@ angular.module('twitterApp.services', []).factory('twitterService', function($q)
             OAuth.clearCache('twitter');
             authorizationResult = false;
         },
-        getLatestTweets: function (maxId) {
+        getLatestTweets: function () {
             //create a deferred object using Angular's $q service
             var deferred = $q.defer();
-      			var url='/1.1/statuses/home_timeline.json';
-      			if(maxId){
-      				url+='?max_id='+maxId;
-      			}
-            var promise = authorizationResult.get(url).done(function(data) { //https://dev.twitter.com/docs/api/1.1/get/statuses/home_timeline
-                //when the data is retrieved resolve the deferred object
-				        deferred.resolve(data);
-            }).fail(function(err) {
-               //in case of any error we reject the promise with the error object
-                deferred.reject(err);
+            var promise = authorizationResult.get('/1.1/statuses/home_timeline.json').done(function(data) { //https://dev.twitter.com/docs/api/1.1/get/statuses/home_timeline
+                //when the data is retrieved resolved the deferred object
+                deferred.resolve(data)
             });
             //return the promise of the deferred object
             return deferred.promise;
         }
     }
-
+    
 });
